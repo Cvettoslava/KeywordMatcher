@@ -26,10 +26,8 @@ defmodule KeywordMatcher do
   def match?(_text, _keyword), do: "The empty string is not possible to be matched. Please enter some text in it!"
 
   def clean_kw(keyword) do
-      _keyword = String.replace(keyword, ~r/\sAND\s/," ")
-          |>String.replace("(", "") 
-          |>String.replace(")", "")
-          |>String.replace(~r/[^\w\s\*]/,"")
+      String.replace(keyword, ~r/\sAND\s/," ")
+      |>String.replace(~r/[^\w\s\*]/,"")
   end
 
   def helper_f_AND?(text, keyword) do

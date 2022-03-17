@@ -10,15 +10,15 @@ defmodule KeywordMatcher do
   def match?(text, keyword) when keyword != "" or text != "" do
     keyword = clean_kw(keyword)
 
-    list_of_results = List.insert_at([], 0, has_or?(keyword))
-    |> List.insert_at(1, has_and?(keyword))
-    |> List.insert_at(2, has_wildcard?(keyword))
+   list_of_results = List.insert_at([], 0, has_or?(keyword))
+   |> List.insert_at(1, has_and?(keyword))
+   |> List.insert_at(2, has_wildcard?(keyword))
 
     case list_of_results do
-      [false, true, _] -> helper_f_AND?(text, keyword)
-      [true, _, _]-> helper_f_OR?(text, keyword)
-      [false, false, false] -> match_single_term?(text, keyword)
-      [false, false, true] -> Regex.match?(~r/#{keyword}/i, text)
+    [false, true, _] -> helper_f_AND?(text, keyword)
+    [true, _, _]-> helper_f_OR?(text, keyword)
+    [false, false, false] -> match_single_term?(text, keyword)
+    [false, false, true] -> Regex.match?(~r/#{keyword}/i, text)
     end
   end
   
@@ -35,14 +35,15 @@ defmodule KeywordMatcher do
   defp helper_f_AND?(text, keyword) do
       list_without_wc = get_words_without_WC(keyword)
       list_with_wc = get_words_with_WC(keyword)
+      {list_with_wc, list_without_wc}
       
       list1 = Enum.map(list_without_wc, fn x -> Regex.match?(~r/\b#{x}\b/iu, text) end)
       is_contains_false = Enum.member?(list1, false)
           
       list2 = Enum.map(list_with_wc, fn x -> text =~ ~r/#{x}/i end)
       case is_contains_false || Enum.member?(list2, false) do
-          true -> false
-          false -> true
+        true -> false
+        false -> true
       end
   end
 
@@ -51,8 +52,8 @@ defmodule KeywordMatcher do
       list_k = Regex.split(~r{\sOR\s}i, keyword)
       list =  Enum.map(list_k, fn x -> helper_f_AND?(text, x) end) 
       case Enum.member?(list, true) do
-          true -> true
-          false -> false
+        true -> true
+        false -> false
       end
   end
 
@@ -82,7 +83,7 @@ defmodule KeywordMatcher do
       end        
   end
 
-  #Checks if the keyword contains a wildcard at the end of a word.
+  #Checks if the keyword contains a wildcard.
   defp has_wildcard?(keyword) do
       Regex.match?(~r/\w\*/i, keyword)
   end

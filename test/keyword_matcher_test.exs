@@ -83,4 +83,31 @@ defmodule KeywordMatcherTest do
 
     assert actual == "The empty string is not possible to be matched. Please enter some text in it!"
   end
+
+  test "wildcard in the middlle of a word" do
+    keyword = "three  AND on*e  five"
+    text = "one two three four five"
+    
+    actual = @module.match?(text, keyword)
+
+    assert actual == true
+  end
+
+  test "wildcard at the end of a OR" do
+    keyword = "three  AND OR*  five"
+    text = "one two three four five"
+    
+    actual = @module.match?(text, keyword)
+
+    assert actual == false
+  end
+
+  test "wildcard at the end of a AND" do
+    keyword = "three  AND* OR  fiv"
+    text = "one two three four five"
+    
+    actual = @module.match?(text, keyword)
+
+    assert actual == false
+  end
 end

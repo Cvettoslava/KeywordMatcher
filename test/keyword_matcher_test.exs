@@ -1,6 +1,6 @@
 defmodule KeywordMatcherTest do
   use ExUnit.Case
-  @module KeywordMatcher2
+  @module KeywordMatcher
 
   describe "match" do
     test "return true if kw is in" do

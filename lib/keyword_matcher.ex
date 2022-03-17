@@ -20,18 +20,20 @@ defmodule KeywordMatcher do
       [false, false, false] -> match_single_term?(text, keyword)
       [false, false, true] -> Regex.match?(~r/#{keyword}/i, text)
     end
-
   end
-      
+  
+  #It's default function which is called when the text or keyword is an empty string.
   def match?(_text, _keyword), do: "The empty string is not possible to be matched. Please enter some text in it!"
 
-  def clean_kw(keyword) do
+  #Cleans the keyword from all not word characters except whitespaces and wildcards.
+  defp clean_kw(keyword) do
       String.replace(keyword, ~r/\sAND\s/," ")
       |>String.replace(~r/[^\w\s\*]/,"")
   end
 
-  def helper_f_AND?(text, keyword) do
-      list_without_wc = get_the_words_without_WC(keyword)
+  #Checks if every single word from the keyword is contained in the text, wchich represents an AND operation.
+  defp helper_f_AND?(text, keyword) do
+      list_without_wc = get_words_without_WC(keyword)
       list_with_wc = get_words_with_WC(keyword)
       
       list1 = Enum.map(list_without_wc, fn x -> Regex.match?(~r/\b#{x}\b/iu, text) end)
@@ -44,7 +46,8 @@ defmodule KeywordMatcher do
       end
   end
 
-  def helper_f_OR?(text, keyword) do
+  #Checks if at least one word from both sides of the OR is contained in the text, wchich represents an OR operation.
+  defp helper_f_OR?(text, keyword) do
       list_k = Regex.split(~r{\sOR\s}i, keyword)
       list =  Enum.map(list_k, fn x -> helper_f_AND?(text, x) end) 
       case Enum.member?(list, true) do
@@ -53,7 +56,8 @@ defmodule KeywordMatcher do
       end
   end
 
-  def get_the_words_without_WC(keyword) do
+  #Gets the words which do not end with a wildcard.
+  defp get_words_without_WC(keyword) do
       case has_and?(keyword) do
           true-> _list_without_wc = Enum.reject(Regex.split(~r{\s}, keyword), fn x -> String.match?(x, ~r/\*/i) end)
                  |> Enum.map(fn x -> String.replace(x, ~r/\W/,"")end)
@@ -61,7 +65,8 @@ defmodule KeywordMatcher do
       end
   end
 
-  def get_words_with_WC(keyword) do
+  #Gets the words which end with a wildcard.
+  defp get_words_with_WC(keyword) do
       case has_and?(keyword) do
           true-> _list_with_wc = Enum.filter(Regex.split(~r{\s}, keyword), fn x -> has_wildcard?(x) end)
                  |> Enum.map(fn x -> String.replace(x, "*","") end)
@@ -69,6 +74,7 @@ defmodule KeywordMatcher do
       end
   end
 
+  #Checks if the keyword is contained in the given text.
   defp match_single_term?(text, keyword) do
       case Regex.match?( ~r/^[[:alpha:]]+$/, keyword) do
           true -> Regex.match?(~r/\b#{keyword}\b/i, text)
@@ -76,15 +82,19 @@ defmodule KeywordMatcher do
       end        
   end
 
-  def has_wildcard?(keyword) do
+  #Checks if the keyword contains a wildcard at the end of a word.
+  defp has_wildcard?(keyword) do
       Regex.match?(~r/\w\*/i, keyword)
   end
 
-  def has_and?(keyword) do
+  #Checks if the keyword contains whitespace.
+  defp has_and?(keyword) do
       Regex.match?(~r/\s/, keyword)
   end
 
+  #Checks if the keyword contains "OR".
   defp has_or?(keyword) do
       Regex.match?(~r/\sOR\s/i, keyword)
   end
+  
 end

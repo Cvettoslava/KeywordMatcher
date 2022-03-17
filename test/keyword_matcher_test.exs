@@ -31,7 +31,7 @@ defmodule KeywordMatcherTest do
   end
   
   test "test sentence of ands" do
-    keyword = "one two three"
+    keyword = "one two thre*"
     text = "one two three four five"
 
     actual = @module.match?(text, keyword)

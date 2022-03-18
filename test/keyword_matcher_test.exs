@@ -67,7 +67,7 @@ defmodule KeywordMatcherTest do
   end
 
   test "test OR operation" do
-    keyword = "thre   OR  AND on  fiv*"
+    keyword = "thre OR fiv"
     text = "one two three four five"
     
     actual = @module.match?(text, keyword)

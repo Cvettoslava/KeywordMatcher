@@ -7,7 +7,7 @@ defmodule KeywordMatcher do
   ## Examples
   """
 
-  def match?(text, keyword) when keyword != "" or text != "" do
+  def match?(text, keyword) when keyword != "" and text != "" do
     keyword = clean_kw(keyword)
 
     list_of_results = List.insert_at([], 0, has_or?(keyword))
@@ -15,8 +15,8 @@ defmodule KeywordMatcher do
     |> List.insert_at(2, has_wildcard?(keyword))
 
     case list_of_results do
-        [false, true, _] -> helper_f_AND?(text, keyword)
-        [true, _, _]-> helper_f_OR?(text, keyword)
+        [false, true, _] -> operation_AND?(text, keyword)
+        [true, _, _]-> operation_OR?(text, keyword)
         [false, false, false] -> match_single_term?(text, keyword)
         [false, false, true] -> Regex.match?(~r/#{keyword}/i, text)
     end
@@ -32,7 +32,7 @@ defmodule KeywordMatcher do
   end
 
   #Checks if every single word from the keyword is contained in the text, wchich represents an AND operation.
-  defp helper_f_AND?(text, keyword) do
+  defp operation_AND?(text, keyword) do
         list_of_words_without_wc = get_words_without_WC(keyword)
         list_of_words_with_wc = get_words_with_WC(keyword)
       
@@ -45,10 +45,10 @@ defmodule KeywordMatcher do
         end
   end
 
-  #Checks if at least one word from both sides of the OR is contained in the text, wchich represents an OR operation.
-  defp helper_f_OR?(text, keyword) do
-      list_k = Regex.split(~r{\sOR\s}i, keyword)
-      list =  Enum.map(list_k, fn x -> helper_f_AND?(text, x) end) 
+  #Checks if the words on at least one side of the OR is contained in the text, wchich represents an OR operation.
+  defp operation_OR?(text, keyword) do
+      split_list = Regex.split(~r{\sOR\s}i, keyword)
+      list =  Enum.map(split_list, fn x -> operation_AND?(text, x) end) 
       case Enum.member?(list, true) do
         true -> true
         false -> false

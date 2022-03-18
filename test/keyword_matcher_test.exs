@@ -77,7 +77,7 @@ defmodule KeywordMatcherTest do
 
   test "empty strings" do
     keyword = ""
-    text = ""
+    text = "a"
     
     actual = @module.match?(text, keyword)
 

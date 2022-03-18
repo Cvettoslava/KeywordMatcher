@@ -1,1 +1,0 @@
-If the keyword contains a "*" in the middle of a word, what we should do?

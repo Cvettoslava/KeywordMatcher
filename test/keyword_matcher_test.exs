@@ -110,4 +110,14 @@ defmodule KeywordMatcherTest do
 
     assert actual == false
   end
+
+  test "no terms between several 'OR' operators" do
+    keyword = "One AND six OR    AND or  OR OR    tw or  "
+    text = "one two three four five"
+    
+    actual = @module.match?(text, keyword)
+
+    assert actual == false
+  end
+
 end
